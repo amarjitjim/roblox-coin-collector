@@ -1,5 +1,6 @@
 local Players=game:GetService("Players")
 local coinsFolder=game.Workspace:WaitForChild("CoinsFolder")
+local RunService=game:GetService("RunService")
 
 Players.PlayerAdded:Connect(function(player)
 	local leaderstats=Instance.new("Folder")
@@ -24,6 +25,44 @@ local function spawnCoin(position)
 	coin.CFrame=CFrame.new(position)
 	coin.Parent=coinsFolder
 	
+	local TweenService =game:GetService("TweenService")
+	--local spinTween=TweenService:Create(
+	--	coin,
+	--	TweenInfo.new(
+	--		2,
+	--		Enum.EasingStyle.Linear,
+	--		Enum.EasingDirection.Out,
+	--		-1,
+	--		false
+	--	),
+	--	{
+	--		CFrame=coin.CFrame*CFrame.Angles(0,math.rad(90),0)
+	--	}
+	--)
+	
+	local spinConnection=RunService.Heartbeat:Connect(
+		function(deltaTime)
+			coin.CFrame=coin.CFrame*CFrame.Angles(0,math.rad(90)*deltaTime,0)
+		end
+	)
+	local pulseTween=TweenService:Create(
+		coin,
+		TweenInfo.new(
+			0.8,
+			Enum.EasingStyle.Sine,
+			Enum.EasingDirection.InOut,
+			-1,
+			true
+		),
+		{
+			Size=Vector3.new(3.6,3.6,3.6)
+		}
+	)
+	
+	--spinTween:Play()
+	spinConnection:Disconnect()
+	pulseTween:Play()
+	
 	local collected=false
 	
 	coin.Touched:Connect(function(hit)
@@ -42,7 +81,28 @@ local function spawnCoin(position)
 		playerCoins.Value+=10
 		print(player.Name .. " collect a coin! Total: " .. playerCoins.Value)
 		
-		coin:Destroy()
+		
+		--spinTween:Cancel()
+		spinConnection:Disconnect()
+		pulseTween:Cancel()
+		
+		local collectTween=TweenService:Create(
+			coin,
+			TweenInfo.new(
+				0.3,
+				Enum.EasingStyle.Quad,
+				Enum.EasingDirection.Out
+			),
+			{
+				Size=Vector3.new(0,0,0),
+				Transparency=1
+			}
+		)
+		collectTween:Play()
+		collectTween.Completed:Connect(function()
+			coin:Destroy()
+		end)
+		--coin:Destroy()
 		
 		task.delay(10,function()
 			local x=math.random(-20,20)
