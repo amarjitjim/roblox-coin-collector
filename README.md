@@ -5,12 +5,15 @@ A server-authoritative coin collecting game built in Roblox Studio.
 ## Live Game
 [Play on Roblox](https://roblox.com/games/10317841907)
 
-## What It Does
+## Features
 - 5 coins scattered across the map
-- Walk into a coin to collect it (+10 coins)
-- Each coin respawns at a random position after 10 seconds
-- Live leaderboard tracks all players
+- Player walks into coin → collects it → coin disappears
+- +10 coins per collection, live leaderboard
+- Coin respawns at random position after 10 seconds
+- Full server authority — no client-side coin awarding
+- Coins rotate, pulse, and fade on collection (TweenService + RunService)
 
+- 
 ## Architecture
 All game logic runs on the server (ServerScriptService).
 No RemoteEvents needed — the server detects Touched events directly in Workspace.
